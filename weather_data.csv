@@ -1,0 +1,4 @@
+Date,Temperature,Humidity,WindSpeed,Pressure
+2023-01-01,15.5,80,12.3,1013
+2023-01-02,16.0,82,14.1,1012
+...
