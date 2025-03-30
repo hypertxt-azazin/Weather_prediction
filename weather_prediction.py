@@ -1,35 +1,35 @@
-import pandas as mp 
-import numpy as np
-import tenserflow as tf
-from sklearn.model_selection import train_test_split
+import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
-# Load dataset
-data = pd.read_csv('weather_data.csv', parse_dates=['Date'])
+# Load the updated CSV file
+data = pd.read_csv(r"C:\Users\rma\OneDrive\Documents\GitHub\Weather_prediction\weather_data.csv")
 
-# Select features and target variable
-features = ['Humidity', 'Windspeed', 'Pressure']
-target = ['Temperature']
+# Convert Date column to datetime
+data['Date'] = pd.to_datetime(data['Date'])
+data.set_index('Date', inplace=True)
 
-# Normalize data
+# Normalize WindSpeed and Pressure for scaling purposes
 scaler = MinMaxScaler()
-data[featues] = scaler.fit_transform(data[features])
+data[['WindSpeed', 'Pressure']] = scaler.fit_transform(data[['WindSpeed', 'Pressure']])
 
-# Prepare training and testing data
-x= data[features].values
-y= data[features].values
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size= 0.2, random_state=42)
+# Plot
+fig, ax1 = plt.subplots(figsize=(10, 5))
+ax2 = ax1.twinx()
 
-# Define the neural network model
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
-    tf.keras.layers.Dense(64, activation='relu'), 
-    tf.keras.layers.Dense(1)
-])
+ax1.plot(data.index, data['Temperature'], 'bo-', label='Temperature')
+ax1.plot(data.index, data['Humidity'], 'gx-', label='Humidity')
+ax2.plot(data.index, data['WindSpeed'], 'y^-', label='WindSpeed (normalized)')
+ax2.plot(data.index, data['Pressure'], 'rs-.', label='Pressure (normalized)')
 
-#Compile the model
-model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+ax1.set_xlabel('Date')
+ax1.set_ylabel('Temperature (°C) / Humidity (%)', color='blue')
+ax2.set_ylabel('WindSpeed / Pressure (normalized)', color='red')
+plt.title("Weather Data: Temperature, Humidity, WindSpeed, and Pressure over Time")
 
-# Train the model
-history = model.fit(X_train, y_train, epochs=50, batch_size=16, validation_data=(X_test, y_test))
+# Combine legends
+lines1, labels1 = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
 
+plt.show()
